@@ -1,0 +1,150 @@
+Breakpoint 1 at 0x401162: file mem.c, line 6.
+Starting program: /home/amichai/vr-portfolio/01-foundations/mem 
+Downloading separate debug info for system-supplied DSO at 0x7ffff7fc3000
+[###                                                                                                                  ][ ###                                                                                                                 ][  ###                                                                                                                ][   ###                                                                                                               ][    ###                                                                                                              ][     ###                                                                                                             ][      ###                                                                                                            ][       ###                                                                                                           ][        ###                                                                                                          ][         ###                                                                                                         ][          ###                                                                                                        ][           ###                                                                                                       ][            ###                                                                                                      ][             ###                                                                                                     ]                                                                                                                         [Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Breakpoint 1, greet () at mem.c:6
+6	    printf("Name: ");
+LEGEND: STACK | HEAP | CODE | DATA | WX | RODATA
+─────────────────────────────────[ REGISTERS / show-flags off / show-compact-regs off ]──────────────────────────────────
+ RAX  0x4011ac (main) ◂— endbr64
+ RBX  0x7fffffffd808 —▸ 0x7fffffffdb0e ◂— '/home/amichai/vr-portfolio/01-foundations/mem'
+ RCX  0x403e00 (__do_global_dtors_aux_fini_array_entry) —▸ 0x401120 (__do_global_dtors_aux) ◂— endbr64
+ RDX  0x7fffffffd818 —▸ 0x7fffffffdb3c ◂— 'SHELL=/bin/bash'
+ RDI  1
+ RSI  0x7fffffffd808 —▸ 0x7fffffffdb0e ◂— '/home/amichai/vr-portfolio/01-foundations/mem'
+ R8   0
+ R9   0x7ffff7fca380 (_dl_fini) ◂— endbr64
+ R10  0x7fffffffd400 ◂— 0x800000
+ R11  0x203
+ R12  1
+ R13  0
+ R14  0x403e00 (__do_global_dtors_aux_fini_array_entry) —▸ 0x401120 (__do_global_dtors_aux) ◂— endbr64
+ R15  0x7ffff7ffd000 (_rtld_global) —▸ 0x7ffff7ffe2e0 ◂— 0
+ RBP  0x7fffffffd6d0 —▸ 0x7fffffffd6e0 —▸ 0x7fffffffd780 —▸ 0x7fffffffd7e0 ◂— 0
+ RSP  0x7fffffffd6b0 {name} ◂— 0
+ RIP  0x401162 (greet+12) ◂— lea rax, [rip + 0xe9b]
+──────────────────────────────────────────[ DISASM / x86-64 / set emulate on ]───────────────────────────────────────────
+   0x40115a <greet+4>     push   rbp
+   0x40115b <greet+5>     mov    rbp, rsp
+   0x40115e <greet+8>     sub    rsp, 0x20
+b► 0x401162 <greet+12>    lea    rax, [rip + 0xe9b]     RAX => 0x402004 ◂— 0x4800203a656d614e /* 'Name: ' */
+   0x401169 <greet+19>    mov    rdi, rax               RDI => 0x402004 ◂— 0x4800203a656d614e /* 'Name: ' */
+   0x40116c <greet+22>    mov    eax, 0                 EAX => 0
+   0x401171 <greet+27>    call   printf@plt                  <printf@plt>
+ 
+   0x401176 <greet+32>    mov    rdx, qword ptr [rip + 0x2ea3]     RDX, [stdin@GLIBC_2.2.5]
+   0x40117d <greet+39>    lea    rax, [rbp - 0x20]
+   0x401181 <greet+43>    mov    esi, 0x20                         ESI => 0x20
+   0x401186 <greet+48>    mov    rdi, rax
+────────────────────────────────────────────────────[ SOURCE (CODE) ]────────────────────────────────────────────────────
+In file: /home/amichai/vr-portfolio/01-foundations/mem.c:6
+    1 #include <stdio.h>
+    2 #include <string.h>
+    3 
+    4 void greet(void) {
+    5     char name[32];
+ ►  6     printf("Name: ");
+    7     fgets(name, sizeof(name), stdin);
+    8     printf("Hello, %s\n", name);
+    9 }
+   10 
+   11 int main(void) {
+   12     greet();
+   13     return 0;
+   14 }
+────────────────────────────────────────────────────────[ STACK ]────────────────────────────────────────────────────────
+00:0000│ rsp 0x7fffffffd6b0 {name} ◂— 0
+... ↓        2 skipped
+03:0018│-008 0x7fffffffd6c8 {name+0x18} —▸ 0x7ffff7fe5af0 (dl_main) ◂— endbr64
+04:0020│ rbp 0x7fffffffd6d0 —▸ 0x7fffffffd6e0 —▸ 0x7fffffffd780 —▸ 0x7fffffffd7e0 ◂— 0
+05:0028│+008 0x7fffffffd6d8 —▸ 0x4011b9 (main+13) ◂— mov eax, 0
+06:0030│+010 0x7fffffffd6e0 —▸ 0x7fffffffd780 —▸ 0x7fffffffd7e0 ◂— 0
+07:0038│+018 0x7fffffffd6e8 —▸ 0x7ffff7c2a1ca (__libc_start_call_main+122) ◂— mov edi, eax
+──────────────────────────────────────────────────────[ BACKTRACE ]──────────────────────────────────────────────────────
+ ► 0 0x401162       greet+12
+   1 0x4011b9       main+13
+   2 0x7ffff7c2a1ca __libc_start_call_main+122
+   3 0x7ffff7c2a28b __libc_start_main+139
+   4 0x401095       _start+37
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+7	    fgets(name, sizeof(name), stdin);
+LEGEND: STACK | HEAP | CODE | DATA | WX | RODATA
+─────────────────────────────────[ REGISTERS / show-flags off / show-compact-regs off ]──────────────────────────────────
+*RAX  6
+ RBX  0x7fffffffd808 —▸ 0x7fffffffdb0e ◂— '/home/amichai/vr-portfolio/01-foundations/mem'
+*RCX  0
+*RDX  0
+*RDI  0x7fffffffd4d0 —▸ 0x7fffffffd500 ◂— 0x203a656d614e /* 'Name: ' */
+*RSI  0x4052a0 ◂— 0x203a656d614e /* 'Name: ' */
+*R8   0x7ffff7e04b20 (main_arena+96) —▸ 0x4056a0 ◂— 0
+*R9   0x410
+*R10  1
+*R11  2
+ R12  1
+ R13  0
+ R14  0x403e00 (__do_global_dtors_aux_fini_array_entry) —▸ 0x401120 (__do_global_dtors_aux) ◂— endbr64
+ R15  0x7ffff7ffd000 (_rtld_global) —▸ 0x7ffff7ffe2e0 ◂— 0
+ RBP  0x7fffffffd6d0 —▸ 0x7fffffffd6e0 —▸ 0x7fffffffd780 —▸ 0x7fffffffd7e0 ◂— 0
+ RSP  0x7fffffffd6b0 {name} ◂— 0
+*RIP  0x401176 (greet+32) ◂— mov rdx, qword ptr [rip + 0x2ea3]
+──────────────────────────────────────────[ DISASM / x86-64 / set emulate on ]───────────────────────────────────────────
+   0x40115e <greet+8>     sub    rsp, 0x20
+b+ 0x401162 <greet+12>    lea    rax, [rip + 0xe9b]     RAX => 0x402004 ◂— 0x4800203a656d614e /* 'Name: ' */
+   0x401169 <greet+19>    mov    rdi, rax               RDI => 0x402004 ◂— 0x4800203a656d614e /* 'Name: ' */
+   0x40116c <greet+22>    mov    eax, 0                 EAX => 0
+   0x401171 <greet+27>    call   printf@plt                  <printf@plt>
+ 
+ ► 0x401176 <greet+32>    mov    rdx, qword ptr [rip + 0x2ea3]     RDX, [stdin@GLIBC_2.2.5] => 0x7ffff7e048e0 (_IO_2_1_stdin_) ◂— 0xfbad2088
+   0x40117d <greet+39>    lea    rax, [rbp - 0x20]                 RAX => 0x7fffffffd6b0 ◂— 0
+   0x401181 <greet+43>    mov    esi, 0x20                         ESI => 0x20
+   0x401186 <greet+48>    mov    rdi, rax                          RDI => 0x7fffffffd6b0 ◂— 0
+   0x401189 <greet+51>    call   fgets@plt                   <fgets@plt>
+ 
+   0x40118e <greet+56>    lea    rax, [rbp - 0x20]
+────────────────────────────────────────────────────[ SOURCE (CODE) ]────────────────────────────────────────────────────
+In file: /home/amichai/vr-portfolio/01-foundations/mem.c:7
+    1 #include <stdio.h>
+    2 #include <string.h>
+    3 
+    4 void greet(void) {
+    5     char name[32];
+    6     printf("Name: ");
+ ►  7     fgets(name, sizeof(name), stdin);
+    8     printf("Hello, %s\n", name);
+    9 }
+   10 
+   11 int main(void) {
+   12     greet();
+   13     return 0;
+   14 }
+────────────────────────────────────────────────────────[ STACK ]────────────────────────────────────────────────────────
+00:0000│ rsp 0x7fffffffd6b0 {name} ◂— 0
+... ↓        2 skipped
+03:0018│-008 0x7fffffffd6c8 {name+0x18} —▸ 0x7ffff7fe5af0 (dl_main) ◂— endbr64
+04:0020│ rbp 0x7fffffffd6d0 —▸ 0x7fffffffd6e0 —▸ 0x7fffffffd780 —▸ 0x7fffffffd7e0 ◂— 0
+05:0028│+008 0x7fffffffd6d8 —▸ 0x4011b9 (main+13) ◂— mov eax, 0
+06:0030│+010 0x7fffffffd6e0 —▸ 0x7fffffffd780 —▸ 0x7fffffffd7e0 ◂— 0
+07:0038│+018 0x7fffffffd6e8 —▸ 0x7ffff7c2a1ca (__libc_start_call_main+122) ◂— mov edi, eax
+──────────────────────────────────────────────────────[ BACKTRACE ]──────────────────────────────────────────────────────
+ ► 0 0x401176       greet+32
+   1 0x4011b9       main+13
+   2 0x7ffff7c2a1ca __libc_start_call_main+122
+   3 0x7ffff7c2a28b __libc_start_main+139
+   4 0x401095       _start+37
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+$1 = (char (*)[32]) 0x7fffffffd6b0
+Stack level 0, frame at 0x7fffffffd6e0:
+ rip = 0x401176 in greet (mem.c:7); saved rip = 0x4011b9
+ called by frame at 0x7fffffffd6f0
+ source language c.
+ Arglist at 0x7fffffffd6d0, args: 
+ Locals at 0x7fffffffd6d0, Previous frame's sp is 0x7fffffffd6e0
+ Saved registers:
+  rbp at 0x7fffffffd6d0, rip at 0x7fffffffd6d8
+0x7fffffffd6d0:	0x00007fffffffd6e0	0x00000000004011b9
+0x7fffffffd6e0:	0x00007fffffffd780	0x00007ffff7c2a1ca
+0x7fffffffd6f0:	0x00007fffffffd730	0x00007fffffffd808
+Continuing.
+[Inferior 1 (process 49468) exited normally]
