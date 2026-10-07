@@ -12,7 +12,7 @@ All work is done in an isolated lab VM, against my own code, intentionally vulne
 |:-:|-------|-------|:------:|
 | 00 | [Lab Setup](./00-lab-setup/) | Isolated Ubuntu VM, toolchain, snapshot & rollback policy | Done |
 | 01 | [Foundations](./01-foundations/) | x86-64 memory layout, stack frames, C & assembly | Done |
-| 02 | Reverse Engineering | Reading binaries without source (Ghidra, objdump) | Next |
+| 02 | [Reverse Engineering](./02-reverse-engineering/) | Reading binaries without source (Ghidra, objdump) | Done |
 | 03 | Binary Exploitation I | Stack overflow and control-flow hijack (ret2win) | Planned |
 | 04 | Binary Exploitation II | Defeating mitigations: NX, ASLR, canaries (ret2libc) | Planned |
 | 05 | CTF | picoGym, pwn.college | Planned |
@@ -47,7 +47,7 @@ flowchart LR
     S6 --> S8
 
     classDef done fill:#2e7d32,color:#fff,stroke:#1b5e20
-    class S0,S1 done
+    class S0,S1,S2 done
 ```
 
 **The logic:** first understand how software is laid out in memory (01), then read binaries without source (02), then take control of a vulnerable program (03) and learn to bypass modern defenses (04). CTFs (05) and web security (06) sharpen and widen the attack surface. Finally, everything is applied to a real vulnerability and documented at a researcher's level (07).
@@ -72,6 +72,16 @@ Five exercises, each verified both statically (`objdump`) and at runtime (`gdb`)
 
 See [notes.md](./01-foundations/notes.md) and [gdb-session.txt](./01-foundations/gdb-session.txt)
 
+### 02: Reverse Engineering
+Reading stripped, no-PIE Linux binaries without source, every finding confirmed both statically (`file`, `strings`, `readelf`, `objdump`, Ghidra) and at runtime (`gdb/pwndbg`, `ltrace`). Four exercises:
+
+1. **crackme - visible password:** recovered `entrypt` from a `strcmp` against a stack-built string; located `main` in a stripped binary via the `rdi` set before `__libc_start_main`
+2. **crackme2 - XOR obfuscation:** rebuilt the check as a byte-by-byte loop over an XOR-encrypted secret, then recovered the password from the key and encrypted bytes - XOR is reversible, so the protection only slows analysis, it doesn't block it
+3. **scanf & the calling convention:** stopped at the call and read the argument registers (`rdi` = format, `rsi` = buffer) per the System V ABI
+4. **picoGym challenges:** Reverse, reverse_cipher, GDB baby step 1 - a fixed string, an encryption algorithm reversed and verified by re-running the binary, and a runtime return value read with `finish`
+
+See [writeup.md](./02-reverse-engineering/writeup.md)
+
 ## Lab environment
 
 | | |
@@ -89,9 +99,9 @@ Folders are added as each stage is completed.
 
 ```
 vr-portfolio/
-  00-lab-setup/                     (done)
-  01-foundations/                   (done)
-  02-reverse-engineering/           crackme.c, writeup.md
+  00-lab-setup/                     setup.md, images/
+  01-foundations/                   mem.c, mem_100.c, mem_two_buf.c, notes.md, gdb-session.txt, images/
+  02-reverse-engineering/           crackme.c, crackme2.c, writeup.md
   03-binexp-control-flow/ret2win/   vuln.c, exploit.py, writeup.md
   04-binexp-defeating-mitigations/  ret2libc/ vuln.c, exploit.py, writeup.md
   05-ctf/                           picogym/, pwncollege/, writeups.md
