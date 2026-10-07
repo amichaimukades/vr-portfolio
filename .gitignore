@@ -1,5 +1,14 @@
 *.core
 core
 *.o
-flag*.txt
+
+# Ghidra projects
+*.rep/
+*.gpr
+
+# WSL/Windows download metadata
+*:Zone.Identifier
+
+# debugger / working files
 .gdb_history
+flag*.txt
