@@ -155,15 +155,15 @@ Correct. Flag: entrypoint{re_basics}
 The password is no longer stored as text. It's built at runtime: each byte of `entrypt` goes through XOR with a key, and the comparison is a byte-by-byte loop (not `strcmp`). A length check was also added, closing a hole where any prefix of the password would pass.
  
 ```c
-int xor = 0x55;
-char secret[] = {0x65^xor, 0x6e^xor, 0x74^xor, 0x72^xor, 0x79^xor, 0x70^xor, 0x74^xor, 0x00};
+int key = 0x55;
+char secret[] = {0x65 ^ key, 0x6e ^ key, 0x74 ^ key, 0x72 ^ key, 0x79 ^ key, 0x70 ^ key, 0x74 ^ key, 0x00 ^ key};
 int len = sizeof(secret) - 1;              // 7
 ...
 if (strlen(input) != len) { puts("Wrong."); return 0; }   // length check
 for (int i = 0; i < len; i++)
-    if (input[i] != secret[i]) { ok = 0; break; }          // byte-by-byte comparison
+    if ((input[i] ^ key) != secret[i]) { ok = 0; break; }          // byte-by-byte comparison
 ```
- 
+
 ### 2.2 What changed in the analysis - compared to Exercise 1
  
 | Tool | Exercise 1 | Exercise 2 |
@@ -224,8 +224,58 @@ The encrypted bytes (in reverse order): `30 3b 21 27 2c 25 21`. pwndbg displays 
 | 0x21 | 0x74 | t |
  
 -> `entrypt`.
+
+### 2.5 Automated verification - `verify.sh`
  
-### 2.5 Conclusion
+`verify.sh` rebuilds the binary from source and verifies that the documented
+password actually unlocks it.
+ 
+```
+$ ./verify.sh
+building crackme2.c (-O0 -no-pie, stripped)
+ 
+[PASS] 'entrypt' is accepted
+[PASS] 'entrypt' prints the documented flag
+[PASS] 'entryp' is rejected
+[PASS] 'entryptx' is rejected
+ 
+--- 4 passed, 0 failed ---
+crackme2 behaves as writeup.md describes.
+```
+ 
+| Check | What it proves |
+|------|----------------|
+| `entrypt` is accepted | the recovered password is the real one, not just the result of a calculation that looks right |
+| `entrypt` prints the flag | the success path is the documented one, not merely an absence of rejection |
+| `entryp` is rejected | the `strlen` guard rejects a password one byte short |
+| `entryptx` is rejected | the `strlen` guard rejects a password one byte long |
+ 
+It rebuilds the binary before testing, to make sure we are not working on a stale
+binary, and it exits non-zero on failure - so it can be run from a Makefile or
+from CI.
+ 
+#### The check that catches the gap
+ 
+The original comparison compared the plaintext input against the encrypted bytes,
+and therefore rejected the documented password. Run against that same source,
+before the fix:
+ 
+```
+[FAIL] 'entrypt' is accepted
+       expected 'Correct', got: Wrong.
+[FAIL] 'entrypt' prints the documented flag (entrypoint{re_basics})
+[PASS] 'entryp' is rejected
+[PASS] 'entryptx' is rejected
+ 
+--- 2 passed, 2 failed ---
+```
+ 
+Both rejection checks passed on the broken binary too - a binary that rejects
+everything satisfies them perfectly. Only the positive check caught the bug. That
+is why the script was run against the broken source first, to prove it was capable
+of failing. 
+
+### 2.6 Conclusion
  
 - **Password:** `entrypt` (unchanged), **Flag:** `entrypoint{re_basics}`.
 - **What was achieved:** `strings` and `ltrace` no longer expose the password - easy static analysis is no longer enough.
@@ -243,27 +293,27 @@ At the machine level there are no "arguments" - only registers. When the code ca
  
 ### 3.2 The stop
  
-The call to scanf in crackme2 is at `0x40124c`. We set a breakpoint there and run:
+The call to scanf in crackme2 is at `0x40124e`. We set a breakpoint there and run:
  
 ```gdb
-pwndbg> b *0x40124c
+pwndbg> b *0x40124e
 pwndbg> r
 ```
  
 The two instructions before the call show how the registers are loaded:
  
 ```asm
-40123a:  mov rsi,rax     ; rsi = buffer address   (argument 2)
-401244:  mov rdi,rax     ; rdi = "%63s" address    (argument 1)
-401247:  mov eax,0x0     ; al = 0  (variadic: no vector arguments)
-40124c:  call __isoc99_scanf@plt
+40123c:  mov rsi,rax     ; rsi = buffer address   (argument 2)
+401246:  mov rdi,rax     ; rdi = "%63s" address    (argument 1)
+401249:  mov eax,0x0     ; al = 0  (variadic: no vector arguments)
+40124e:  call __isoc99_scanf@plt
 ```
  
 ### 3.3 The registers at the moment of the call
  
 ```
 RDI  0x402013 <- '%63s'           # argument 1: the format string
-RSI  0x7fffffffd680 <- 0          # argument 2: buffer address (empty - nothing typed yet)
+RSI  0x7fffffffd600 <- 0          # argument 2: buffer address (empty - nothing typed yet)
 RAX  0                            # al=0: no SSE/float arguments
 ```
  

@@ -80,6 +80,9 @@ Reading stripped, no-PIE Linux binaries without source, every finding confirmed 
 3. **scanf & the calling convention:** stopped at the call and read the argument registers (`rdi` = format, `rsi` = buffer) per the System V ABI
 4. **picoGym challenges:** Reverse, reverse_cipher, GDB baby step 1 - a fixed string, an encryption algorithm reversed and verified by re-running the binary, and a runtime return value read with `finish`
 
+[verify.sh](./02-reverse-engineering/verify.sh) rebuilds the binary from source and
+verifies that the password check behaves as documented.
+
 See [writeup.md](./02-reverse-engineering/writeup.md)
 
 ## Lab environment
@@ -101,7 +104,7 @@ Folders are added as each stage is completed.
 vr-portfolio/
   00-lab-setup/                     setup.md, images/
   01-foundations/                   mem.c, mem_100.c, mem_two_buf.c, notes.md, gdb-session.txt, images/
-  02-reverse-engineering/           crackme.c, crackme2.c, writeup.md
+  02-reverse-engineering/           crackme.c, crackme2.c, verify.sh, writeup.md
   03-binexp-control-flow/ret2win/   vuln.c, exploit.py, writeup.md
   04-binexp-defeating-mitigations/  ret2libc/ vuln.c, exploit.py, writeup.md
   05-ctf/                           picogym/, pwncollege/, writeups.md
