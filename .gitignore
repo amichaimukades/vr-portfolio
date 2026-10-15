@@ -11,4 +11,4 @@ core
 
 # debugger / working files
 .gdb_history
-flag*.txt
+*.txt
