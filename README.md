@@ -13,7 +13,7 @@ All work is done in an isolated lab VM, against my own code, intentionally vulne
 | 00 | [Lab Setup](./00-lab-setup/) | Isolated Ubuntu VM, toolchain, snapshot & rollback policy | Done |
 | 01 | [Foundations](./01-foundations/) | x86-64 memory layout, stack frames, C & assembly | Done |
 | 02 | [Reverse Engineering](./02-reverse-engineering/) | Reading binaries without source (Ghidra, objdump) | Done |
-| 03 | Binary Exploitation I | Stack overflow and control-flow hijack (ret2win) | Planned |
+| 03 | Binary Exploitation I | Stack overflow and control-flow hijack (ret2win) | Done |
 | 04 | Binary Exploitation II | Defeating mitigations: NX, ASLR, canaries (ret2libc) | Planned |
 | 05 | CTF | picoGym, pwn.college | Planned |
 | 06 | Web Security | PortSwigger Web Security Academy, vulnerability report | Planned |
@@ -47,7 +47,7 @@ flowchart LR
     S6 --> S8
 
     classDef done fill:#2e7d32,color:#fff,stroke:#1b5e20
-    class S0,S1,S2 done
+    class S0,S1,S2,S3 done
 ```
 
 **The logic:** first understand how software is laid out in memory (01), then read binaries without source (02), then take control of a vulnerable program (03) and learn to bypass modern defenses (04). CTFs (05) and web security (06) sharpen and widen the attack surface. Finally, everything is applied to a real vulnerability and documented at a researcher's level (07).
@@ -85,6 +85,20 @@ verifies that the password check behaves as documented.
 
 See [writeup.md](./02-reverse-engineering/writeup.md)
 
+### 03: Binary Exploitation I
+Taking control of a vulnerable program's execution flow. Every offset was measured rather than assumed - found with `cyclic` in gdb and confirmed against the disassembly. Five exercises:
+
+1. **ret2win:** overwrote the return address at offset **72** and reached `win`; the flag printed but `system()` crashed, fixed with a single `ret` gadget for stack alignment
+2. **A changed buffer size:** `buffer[88]` puts the return address at **104**, not 96 - the compiler rounds the frame up to a multiple of 16
+3. **Stack canary:** the same exploit now ends in `SIGABRT` and `*** stack smashing detected ***` - the overwrite still happens, the canary only detects it
+4. **An argument through `rdi`:** no `pop rdi; ret` exists since glibc 2.34 dropped `__libc_csu_init`; a static build supplies `pop rdi; pop rbp; ret`
+5. **picoGym `format string 0`:** solved, plus a second path the challenge did not intend - an unbounded `scanf` into the same SIGSEGV handler
+
+[verify.sh](./03-binexp-control-flow/ret2win/verify.sh) rebuilds all three targets from
+source and checks both that the exploits work and that wrong input does not.
+
+See [writeup.md](./03-binexp-control-flow/ret2win/writeup.md)
+
 ## Lab environment
 
 | | |
@@ -105,7 +119,9 @@ vr-portfolio/
   00-lab-setup/                     setup.md, images/
   01-foundations/                   mem.c, mem_100.c, mem_two_buf.c, notes.md, gdb-session.txt, images/
   02-reverse-engineering/           crackme.c, crackme2.c, verify.sh, writeup.md
-  03-binexp-control-flow/ret2win/   vuln.c, exploit.py, writeup.md
+  03-binexp-control-flow/ret2win/   vuln.c, vuln2.c, vuln3.c, format-string-0.c,
+                                    exploit.py, exploit2.py, exploit3.py,
+                                    verify.sh, writeup.md
   04-binexp-defeating-mitigations/  ret2libc/ vuln.c, exploit.py, writeup.md
   05-ctf/                           picogym/, pwncollege/, writeups.md
   06-web/                           portswigger-notes.md, vulnerability-report.md
