@@ -1,0 +1,5 @@
+# executable files
+vuln
+vuln_static
+vuln_leak
+vuln_gadget

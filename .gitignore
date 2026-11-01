@@ -12,3 +12,6 @@ core
 # debugger / working files
 .gdb_history
 *.txt
+
+# hebrow files
+*.he.md
