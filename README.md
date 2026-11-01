@@ -110,7 +110,7 @@ The classic ret2libc recipe assumes a `pop rdi; ret` gadget in the binary - but 
 
 [verify.sh](./04-binexp-defeating-mitigations/ret2libc/verify.sh) rebuilds all four targets from source, re-asserts the wall (no arg-control gadget), and checks that all four escapes get a shell.
 
-See [writeup.md](./04-binexp-defeating-mitigations/writeup.md)
+See [writeup.md](./04-binexp-defeating-mitigations/ret2libc/writeup.md)
 
 ## Lab environment
 
