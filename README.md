@@ -13,8 +13,8 @@ All work is done in an isolated lab VM, against my own code, intentionally vulne
 | 00 | [Lab Setup](./00-lab-setup/) | Isolated Ubuntu VM, toolchain, snapshot & rollback policy | Done |
 | 01 | [Foundations](./01-foundations/) | x86-64 memory layout, stack frames, C & assembly | Done |
 | 02 | [Reverse Engineering](./02-reverse-engineering/) | Reading binaries without source (Ghidra, objdump) | Done |
-| 03 | Binary Exploitation I | Stack overflow and control-flow hijack (ret2win) | Done |
-| 04 | Binary Exploitation II | Defeating mitigations: NX, ASLR, canaries (ret2libc) | Planned |
+| 03 | [Binary Exploitation I](./03-binexp-control-flow/) | Stack overflow and control-flow hijack (ret2win) | Done |
+| 04 | [Binary Exploitation II](./04-binexp-defeating-mitigations/) | Defeating mitigations: NX, ASLR, canaries (ret2libc) | Done |
 | 05 | CTF | picoGym, pwn.college | Planned |
 | 06 | Web Security | PortSwigger Web Security Academy, vulnerability report | Planned |
 | 07 | CVE Deep Dive | CVE-2021-41773 (Apache path traversal) + one more | Planned |
@@ -47,7 +47,7 @@ flowchart LR
     S6 --> S8
 
     classDef done fill:#2e7d32,color:#fff,stroke:#1b5e20
-    class S0,S1,S2,S3 done
+    class S0,S1,S2,S3,S4 done
 ```
 
 **The logic:** first understand how software is laid out in memory (01), then read binaries without source (02), then take control of a vulnerable program (03) and learn to bypass modern defenses (04). CTFs (05) and web security (06) sharpen and widen the attack surface. Finally, everything is applied to a real vulnerability and documented at a researcher's level (07).
@@ -99,6 +99,19 @@ source and checks both that the exploits work and that wrong input does not.
 
 See [writeup.md](./03-binexp-control-flow/ret2win/writeup.md)
 
+### 04: Binary Exploitation II (defeating mitigations)
+The classic ret2libc recipe assumes a `pop rdi; ret` gadget in the binary - but glibc 2.34 removed `__libc_csu_init`, so a small no-PIE binary built against glibc 2.39 has no argument-control gadget and the classic chain can't even start. The core finding is one dependency chain that blocks every classic technique (ret2libc, ret2csu, ret2dlresolve, GOT overwrite) at the same point, and four ways past it:
+
+1. **Escape A - restore the gadget:** bring back `pop rdi; ret` as inline asm, then a two-stage `puts` leak beats ASLR
+2. **Escape B - static linking:** no leak needed - a `.bss` stack pivot plus a raw `execve` syscall, since No-PIE keeps every address fixed
+3. **Escape C - ASLR off:** libc's own `pop rdi; ret` sits at a fixed address, used directly with no leak and no gadget in the binary
+4. **Escape D - real leak:** a format-string bug leaks a libc pointer at runtime, then ordinary ret2libc with libc's own gadget
+5. **Exercise 5 (pwn.college):** login-leakage easy + hard - bypassing a `strcmp` password check by overwriting the stored secret with a null byte (offset printed by the program in easy, found in gdb in hard)
+
+[verify.sh](./04-binexp-defeating-mitigations/ret2libc/verify.sh) rebuilds all four targets from source, re-asserts the wall (no arg-control gadget), and checks that all four escapes get a shell.
+
+See [writeup.md](./04-binexp-defeating-mitigations/writeup.md)
+
 ## Lab environment
 
 | | |
@@ -122,7 +135,10 @@ vr-portfolio/
   03-binexp-control-flow/ret2win/   vuln.c, vuln2.c, vuln3.c, format-string-0.c,
                                     exploit.py, exploit2.py, exploit3.py,
                                     verify.sh, writeup.md
-  04-binexp-defeating-mitigations/  ret2libc/ vuln.c, exploit.py, writeup.md
+  04-binexp-defeating-mitigations/  ret2libc/ writeup.md, vuln.c, vuln_gadget.c, vuln_leak.c,
+                                    exploit_A_gadget.py, exploit_B_static.py,
+                                    exploit_C_noaslr.py, exploit_D_leak.py,
+                                    verify.sh, MakeFile
   05-ctf/                           picogym/, pwncollege/, writeups.md
   06-web/                           portswigger-notes.md, vulnerability-report.md
   07-cve-analysis/                  CVE-2021-41773/, second CVE
