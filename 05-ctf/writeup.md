@@ -30,7 +30,7 @@ Ten challenges were solved, across four categories, each documented in a separat
 
 ### pwn.college - Program Security
 
-- **[Bounds Breaker Easy](./pwncollege/program-security/bounds-breaker-easy/writeup.md)** - ret2win with a signed/unsigned mismatch that cancels out a bounds check that looks correct.
+- **[Bounds Breaker Easy](./pwncollege/writeup.md)** - ret2win with a signed/unsigned mismatch that cancels out a bounds check that looks correct.
 
 ---
 
