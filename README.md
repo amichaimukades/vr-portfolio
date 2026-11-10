@@ -15,8 +15,8 @@ All work is done in an isolated lab VM, against my own code, intentionally vulne
 | 02 | [Reverse Engineering](./02-reverse-engineering/) | Reading binaries without source (Ghidra, objdump) | Done |
 | 03 | [Binary Exploitation I](./03-binexp-control-flow/) | Stack overflow and control-flow hijack (ret2win) | Done |
 | 04 | [Binary Exploitation II](./04-binexp-defeating-mitigations/) | Defeating mitigations: NX, ASLR, canaries (ret2libc) | Done |
-| 05 | [CTF](05-ctf/) | picoGym, pwn.college | Done |
-| 06 | Web Security | PortSwigger Web Security Academy, vulnerability report | Planned |
+| 05 | [CTF](./05-ctf/) | picoGym, pwn.college | Done |
+| 06 | [Web Security](./06-web/) | PortSwigger Web Security Academy, vulnerability report | Done |
 | 07 | CVE Deep Dive | CVE-2021-41773 (Apache path traversal) + one more | Planned |
 | 08 | Methodology | Research journal, lessons learned | Planned |
 
@@ -47,7 +47,7 @@ flowchart LR
     S6 --> S8
 
     classDef done fill:#2e7d32,color:#fff,stroke:#1b5e20
-    class S0,S1,S2,S3,S4,S5 done
+    class S0,S1,S2,S3,S4,S5,S6 done
 ```
 
 **The logic:** first understand how software is laid out in memory (01), then read binaries without source (02), then take control of a vulnerable program (03) and learn to bypass modern defenses (04). CTFs (05) and web security (06) sharpen and widen the attack surface. Finally, everything is applied to a real vulnerability and documented at a researcher's level (07).
@@ -119,7 +119,19 @@ Applying 01-04 against real CTF challenges, usually black-box (no source) and so
 2. **Reverse Engineering (picoGym):** GDB baby step 2-4 - a loop's final register value (and exactly where to place the breakpoint), a little-endian byte order read straight out of memory, and a constant exposed as a literal operand in the disassembly alone
 3. **Web Exploitation (picoGym):** Crack the Gate 1, Old Sessions, SSTI1 - a developer's backdoor hidden with a Caesar cipher, a session cookie that never expires combined with an exposed session store, and a Server-Side Template Injection that reaches full RCE through Python's class hierarchy
 4. **pwn.college (Program Security):** Bounds Breaker Easy - a signed/unsigned mismatch that cancels out a bounds check that looks correct
+
 See [writeup.md](./05-ctf/writeup.md), including an extended writeup of Format String 2 - the exercise that needed the most debugging, not just technique.
+
+### 06: Web Security
+Six PortSwigger Web Security Academy labs across four vulnerability classes. Each one is documented with the payload that worked, the root cause, and the fix at the code level - not just the solution:
+
+1. **SQL Injection:** hidden-data retrieval and login bypass - both come from building the query by string concatenation; a first payload (`Accessories'--`) that worked only partially showed what the lab actually checks
+2. **XSS:** reflected and stored, HTML context with nothing encoded - the same missing output encoding, at a different point in the data flow
+3. **Broken Access Control:** a front-end proxy checks the visible path while the back end routes by the `X-Original-URL` header, so neither one really checks
+4. **SSRF:** scanned `192.168.0.0/24` through the `stockApi` parameter with Burp Intruder, found an internal admin interface, and deleted a user through it with no authentication
+5. **Vulnerability report:** the SSRF finding written up the way a researcher reports to a client - severity, impact, steps to reproduce, root cause, recommended fix
+
+See [portswigger-notes.md](./06-web/portswigger-notes.md) and [vulnerability-report.md](./06-web/vulnerability-report.md)
 
 ## Lab environment
 
@@ -131,6 +143,7 @@ See [writeup.md](./05-ctf/writeup.md), including an extended writeup of Format S
 | Exploit dev | Python 3.12 + pwntools |
 | Containers | Docker 29 |
 | Reverse engineering | Ghidra |
+| Web testing | Burp Suite |
 
 ## Repository structure
 
