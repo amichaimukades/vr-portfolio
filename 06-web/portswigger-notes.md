@@ -1,6 +1,6 @@
 # PortSwigger Web Security Academy - Research Notes
 
-Stage 7 - Web Security. Notes from the PortSwigger Web Security
+Notes from the PortSwigger Web Security
 Academy labs: payload, root cause and fix for each lab, followed by
 a code-level summary per vulnerability type.
 
