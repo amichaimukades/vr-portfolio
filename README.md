@@ -17,7 +17,7 @@ All work is done in an isolated lab VM, against my own code, intentionally vulne
 | 04 | [Binary Exploitation II](./04-binexp-defeating-mitigations/) | Defeating mitigations: NX, ASLR, canaries (ret2libc) | Done |
 | 05 | [CTF](./05-ctf/) | picoGym, pwn.college | Done |
 | 06 | [Web Security](./06-web/) | PortSwigger Web Security Academy, vulnerability report | Done |
-| 07 | CVE Deep Dive | CVE-2021-41773 (Apache path traversal) + one more | Planned |
+| 07 | [CVE Deep Dive](./07-cve-analysis/) | CVE-2021-41773 (Apache path traversal) + CVE-2021-44228 (Log4Shell) | Done |
 | 08 | Methodology | Research journal, lessons learned | Planned |
 
 ## Roadmap
@@ -47,7 +47,7 @@ flowchart LR
     S6 --> S8
 
     classDef done fill:#2e7d32,color:#fff,stroke:#1b5e20
-    class S0,S1,S2,S3,S4,S5,S6 done
+    class S0,S1,S2,S3,S4,S5,S6,S7 done
 ```
 
 **The logic:** first understand how software is laid out in memory (01), then read binaries without source (02), then take control of a vulnerable program (03) and learn to bypass modern defenses (04). CTFs (05) and web security (06) sharpen and widen the attack surface. Finally, everything is applied to a real vulnerability and documented at a researcher's level (07).
@@ -133,6 +133,14 @@ Six PortSwigger Web Security Academy labs across four vulnerability classes. Eac
 
 See [portswigger-notes.md](./06-web/portswigger-notes.md) and [vulnerability-report.md](./06-web/vulnerability-report.md)
 
+### 07: CVE Deep Dive
+Two real-world, in-the-wild CVEs reproduced in an isolated lab (Vulhub + Docker) and analyzed at a researcher's level - not just "it works", but *why* it works, *why the first patch wasn't enough*, and *how a defender detects it*.
+
+1. **CVE-2021-41773 - Apache path traversal → RCE:** a change to `ap_normalize_path` in 2.4.49 lets an encoded `.%2e` escape the web root. file disclosure via `Alias`, RCE via `ScriptAlias` + CGI. Includes why the first fix (2.4.50) failed and spawned CVE-2021-42013 - a fix of the symptom, not the root cause.
+2. **CVE-2021-44228 (Log4Shell) - JNDI injection → RCE (CVSS 10.0):** `${jndi:ldap://...}` in any logged input triggers a remote class load. Root cause traced to **two** independent points (lookups enabled by default + an unrestricted JNDI lookup), each patched in a separate 2.15.0 commit, and why only 2.16.0 - removing the feature - was the real fix.
+
+See [CVE-2021-41773/writeup.md](./07-cve-analysis/CVE-2021-41773/writeup.md) and [CVE-2021-44228/writeup.md](./07-cve-analysis/CVE-2021-44228/writeup.md), each with a companion `poc-notes.md` of the full technical reproduction.
+
 ## Lab environment
 
 | | |
@@ -173,7 +181,8 @@ vr-portfolio/
                                     pwncollege/ writeup.md
   
   06-web/                           portswigger-notes.md, vulnerability-report.md
-  07-cve-analysis/                  CVE-2021-41773/, second CVE
+  07-cve-analysis/                  CVE-2021-41773/ (writeup.md, poc-notes.md),
+                                    CVE-2021-44228/ (writeup.md, poc-notes.md)
   08-methodology/                   research-journal.md
 ```
 
