@@ -4,7 +4,7 @@
 
 This module applies what was learned in stages 01-04 (memory layout, reverse engineering, buffer overflow, defeating mitigations) against real CTF challenges from two platforms: picoGym and pwn.college, plus a new Web Exploitation category. Unlike the earlier stages, which are built on source code written in advance and developed gradually, here every challenge is independent, usually with no visible source code (black-box), and sometimes against a remote server rather than just a local binary.
 
-Ten challenges were solved, across four categories, each documented in a separate writeup under `05-ctf/`. One challenge - Format String 2 - was picked for an extended writeup (the second part of this document), because it was among the more challenging exercises in this module.
+Eleven challenges were solved across four categories. Ten have their own writeup under `05-ctf/`; the eleventh - the required [Format String 0](../03-binexp-control-flow/ret2win/writeup.md) - was solved and documented back in stage 03 and is cross-referenced below. One challenge - Format String 2 - was picked for an extended writeup (the second part of this document), because it was among the more challenging exercises in this module.
 
 **Tools:** `gdb`/`pwndbg`, `objdump`, `curl`, `pwntools` (`fmtstr_payload`, `remote`, `process`), Ghidra.
 
@@ -12,6 +12,7 @@ Ten challenges were solved, across four categories, each documented in a separat
 
 ### Binary Exploitation (picoGym)
 
+- **[Format String 0](../03-binexp-control-flow/ret2win/writeup.md)** - Solved and documented in stage 03 (Exercise 5): a format-string bug that crashes into a `SIGSEGV` handler which prints the flag, plus a second, unintended overflow path. Cross-referenced here [Format String 0](../03-binexp-control-flow/ret2win/writeup.md).
 - **[Format Strings 1](./picogym/binary-exploitation/format-string-1/writeup.md)** - leak from the stack using `%p`, with the offset calculated in advance from the calling convention instead of trial and error.
 - **[Format String 2](./picogym/binary-exploitation/format-string-2/writeup.md)** - arbitrary write to memory (`%n`/`%hn`). Covered in depth in the second part of this document.
 - **[Local Target](./picogym/binary-exploitation/local-target/writeup.md)** - stack buffer overflow with `gets()`, including finding that the real distance between variables in memory is different from what the source code "promises."
