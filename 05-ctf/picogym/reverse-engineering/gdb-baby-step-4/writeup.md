@@ -7,7 +7,7 @@
 
 ## The Task
 
-`main` calls a function that multiplies `eax` by a constant. The flag is that constant in decimal (`0x1000` -> `academy{4096}`).
+`main` calls a function that multiplies `eax` by a constant. The flag is that constant in decimal: the immediate operand is `0x3269`, which is 12905, so the flag is `academy{12905}`.
 
 
 ```asm
