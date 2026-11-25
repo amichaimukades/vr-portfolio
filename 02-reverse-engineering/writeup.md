@@ -299,25 +299,33 @@ The call to scanf in crackme2 is at `0x40124e`. We set a breakpoint there and ru
 pwndbg> b *0x40124e
 pwndbg> r
 ```
- 
-The two instructions before the call show how the registers are loaded:
- 
-```asm
-40123c:  mov rsi,rax     ; rsi = buffer address   (argument 2)
-401246:  mov rdi,rax     ; rdi = "%63s" address    (argument 1)
-401249:  mov eax,0x0     ; al = 0  (variadic: no vector arguments)
-40124e:  call __isoc99_scanf@plt
+
+Execution stops on the `call` itself, before scanf reads anything. Disassembling the bytes that lead up to it - with the raw opcodes, so the quote is reproducible - shows exactly how each argument register is loaded:
+
+```gdb
+pwndbg> disassemble /r 0x401238, 0x401253
+Dump of assembler code from 0x401238 to 0x401253:
+   0x0000000000401238:  48 8d 45 b0           lea    rax,[rbp-0x50]       ; rax = &input (the buffer)
+   0x000000000040123c:  48 89 c6              mov    rsi,rax              ; rsi = &input          (argument 2)
+   0x000000000040123f:  48 8d 05 cd 0d 00 00  lea    rax,[rip+0xdcd]      ; rax reloaded = 0x402013 ("%63s")
+   0x0000000000401246:  48 89 c7              mov    rdi,rax              ; rdi = "%63s"          (argument 1)
+   0x0000000000401249:  b8 00 00 00 00        mov    eax,0x0              ; al = 0 (variadic: no vector args)
+=> 0x000000000040124e:  e8 6d fe ff ff        call   0x4010c0 <__isoc99_scanf@plt>
+End of assembler dump.
 ```
- 
+
+The two arguments are loaded by two independent `lea rax, … ; mov <reg>, rax` pairs, not from a single `rax`. First `&input` is computed into `rax` and copied to `rsi` (`0x401238`-`0x40123c`); then `rax` is **reloaded** with the address of `"%63s"` and copied to `rdi` (`0x40123f`-`0x401246`). The earlier draft omitted the reload at `0x40123f`, which is why the sequence seemed to claim one `rax` held two different addresses at once.
+
 ### 3.3 The registers at the moment of the call
- 
+
+```gdb
+pwndbg> info registers rdi rsi rax
+rdi            0x402013            0x402013
+rsi            0x7fffffffd3e0      0x7fffffffd3e0
+rax            0x0                 0x0
 ```
-RDI  0x402013 <- '%63s'           # argument 1: the format string
-RSI  0x7fffffffd600 <- 0          # argument 2: buffer address (empty - nothing typed yet)
-RAX  0                            # al=0: no SSE/float arguments
-```
- 
-Important point: the register holds the **address** that points to the string itself. `rdi = 0x402013`, and at that address sits `"%63s"`. `rsi` points to an area on the stack where `<- 0` (empty) - because scanf hasn't written there yet. After running, that same address will hold the input.
+
+`rdi = 0x402013` points to the format string `"%63s"` (argument 1). `rsi = 0x7fffffffd3e0` points to `input` on the stack (argument 2), still empty because scanf has not written there yet. `rax = 0` reflects the `mov eax,0` just before the call - the variadic ABI rule that `al` holds the number of floating-point arguments, here zero.
  
 ### 3.4 Relation to the calling convention
  
