@@ -155,3 +155,11 @@ Full gdb session (breakpoint, run, next, p &name, info frame,
    x/6gx $rbp, continue) captured via `set logging file` /
    `set logging enabled on` on the original mem binary (32-byte
    buffer). See: 01-foundations/gdb-session.txt
+
+## Automated check
+
+`verify.sh` rebuilds the three variants from source (`-O0 -no-pie`, as in the
+gdb session above) and feeds each a line far longer than its buffer. With the
+bounded `fgets` the input is truncated and the program exits cleanly; the check
+is behaviour-based, so it would turn red if a future edit swapped `fgets` for
+`gets()` or shrank a buffer and the overflow came back. Run it with `./verify.sh`.

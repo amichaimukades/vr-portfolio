@@ -70,6 +70,8 @@ Five exercises, each verified both statically (`objdump`) and at runtime (`gdb`)
 4. **Bounded vs. unbounded input:** why `fgets` stopped the overflow, and what `gets` would have overwritten (padding, then saved `rbp`, then the return address)
 5. **Full gdb transcript** of the session
 
+[verify.sh](./01-foundations/verify.sh) rebuilds the three variants from source and feeds an over-long line to each, asserting the bounded `fgets` keeps every read in-frame.
+
 See [notes.md](./01-foundations/notes.md) and [gdb-session.txt](./01-foundations/gdb-session.txt)
 
 ### 02: Reverse Engineering
@@ -161,7 +163,7 @@ Folders are added as each stage is completed.
 vr-portfolio/
   00-lab-setup/                     setup.md, images/
   
-  01-foundations/                   mem.c, mem_100.c, mem_two_buf.c, notes.md, gdb-session.txt, images/
+  01-foundations/                   mem.c, mem_100.c, mem_two_buf.c, notes.md, gdb-session.txt, verify.sh, images/
   
   02-reverse-engineering/           crackme.c, crackme2.c, verify.sh, writeup.md
   
