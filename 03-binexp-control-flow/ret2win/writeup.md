@@ -512,6 +512,8 @@ From this, two takeaways:
 
 Building without `-fno-stack-protector` ← `checksec` confirms `Canary found` ← the same exploit ← `Done.` is still printed (the overwrite happened), but `*** stack smashing detected ***` and `SIGABRT` instead of the flag ← updating the offset will not help, and a second vulnerability (a leak) or a non-continuous write is needed.
 
+`verify.sh` asserts this automatically: it rebuilds `vuln.c` with the canary and checks that the working payload aborts in `__stack_chk_fail` instead of reaching `win()`.
+
 ---
 
 ## Exercise 4 - passing an argument through rdi

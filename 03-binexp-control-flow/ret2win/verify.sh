@@ -134,6 +134,32 @@ fi
 echo
 
 # ---------------------------------------------------------------------------
+echo "--- the canary must stop the overflow ---"
+# ---------------------------------------------------------------------------
+# Exercise 3 in writeup.md shows by hand that rebuilding with the stack
+# protector turns the same overflow into an abort. This makes that observation
+# repeatable: build vuln.c WITH the canary (the default - no -fno-stack-protector),
+# fire the working ret2win payload, and assert the program aborts in
+# __stack_chk_fail instead of reaching win().
+gcc -g -O0 -no-pie -o vuln_canary vuln.c 2>/dev/null \
+    || { echo "build failed: vuln_canary" >&2; exit 2; }
+
+canary_out=$(gen ./vuln_canary "flat({72: [ret, elf.symbols['win']]})" \
+    | timeout 20 ./vuln_canary 2>&1)
+canary_code=$?
+
+if grep -qF "$FLAG" <<<"$canary_out"; then
+    fail 'canary build: the flag printed anyway' \
+         'the stack protector did not catch the overwrite'
+elif grep -q 'stack smashing detected' <<<"$canary_out" || [ "$canary_code" -eq 134 ]; then
+    pass 'canary build: the overflow is caught by __stack_chk_fail (SIGABRT)'
+else
+    fail 'canary build: neither flag nor stack-smashing abort' \
+         "unexpected exit $canary_code - did the payload reach the overflow?"
+fi
+echo
+
+# ---------------------------------------------------------------------------
 printf -- '--- %d passed, %d failed ---\n' "$PASS" "$FAIL"
 
 if [ "$FAIL" -eq 0 ]; then
