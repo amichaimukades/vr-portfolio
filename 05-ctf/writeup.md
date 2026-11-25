@@ -12,7 +12,7 @@ Eleven challenges were solved across four categories. Ten have their own writeup
 
 ### Binary Exploitation (picoGym)
 
-- **[Format String 0](../03-binexp-control-flow/ret2win/writeup.md)** - Solved and documented in stage 03 (Exercise 5): a format-string bug that crashes into a `SIGSEGV` handler which prints the flag, plus a second, unintended overflow path. Cross-referenced here [Format String 0](../03-binexp-control-flow/ret2win/writeup.md).
+- **[Format String 0](../03-binexp-control-flow/ret2win/writeup.md)** - Solved and documented in stage 03 (Exercise 5): a format-string bug that crashes into a `SIGSEGV` handler which prints the flag, plus a second, unintended overflow path.
 - **[Format Strings 1](./picogym/binary-exploitation/format-string-1/writeup.md)** - leak from the stack using `%p`, with the offset calculated in advance from the calling convention instead of trial and error.
 - **[Format String 2](./picogym/binary-exploitation/format-string-2/writeup.md)** - arbitrary write to memory (`%n`/`%hn`). Covered in depth in the second part of this document.
 - **[Local Target](./picogym/binary-exploitation/local-target/writeup.md)** - stack buffer overflow with `gets()`, including finding that the real distance between variables in memory is different from what the source code "promises."
