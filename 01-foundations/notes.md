@@ -1,8 +1,9 @@
+# Foundations - Stack Frames & Memory Layout
 
 ## Exercise 1: stack frame map of greet() (original 32-byte buffer)
 
 build with debug symbol and stable addresses to learn:
- gcc -g -O0 -no-pie -fno-stack-protector -o mem mem.c
+gcc -g -O0 -no-pie -fno-stack-protector -o mem mem.c
 
 From objdump (static disassembly):
 
