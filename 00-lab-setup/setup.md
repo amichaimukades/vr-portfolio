@@ -29,26 +29,34 @@ An experienced researcher always maintains a clean state. A baseline snapshot wa
 ---
 ## Installation and Recovery Guide
 
-# Base tools: Compiler, debugger, git, python, docker
+Base tools: Compiler, debugger, git, python, docker
+```bash
 sudo apt update
 sudo apt install -y build-essential gdb git python3 python3-pip python3-venv docker.io docker-compose-plugin
+```
 
-# pwndbg: An enhancement layer over gdb, integrating well with pwntools
-git clone [https://github.com/pwndbg/pwndbg](https://github.com/pwndbg/pwndbg)
+pwndbg: An enhancement layer over gdb, integrating well with pwntools
+```bash
+git clone https://github.com/pwndbg/pwndbg
 cd pwndbg && ./setup.sh && cd ..
+```
 
-# pwntools inside a dedicated virtualenv
+pwntools inside a dedicated virtualenv
+```bash
 python3 -m venv ~/vr-venv
 source ~/vr-venv/bin/activate
 pip install pwntools
+```
 
-Note: You must run source ~/vr-venv/bin/activate every time you open a new terminal. Alternatively, you can add this line to your ~/.bashrc file for automatic activation.
+> **Note:** You must run source ~/vr-venv/bin/activate every time you open a new terminal. Alternatively, you can add this line to your ~/.bashrc file for automatic activation.
 
-# Add user to the docker group to avoid using sudo every time
+Add user to the docker group to avoid using sudo every time
+```bash
 sudo usermod -aG docker $USER
-# You need to log out and log back in (or restart the VM) for this change to take effect
+```
+You need to log out and log back in (or restart the VM) for this change to take effect
 
-# Ghidra (Manual Installation for Ubuntu)
+### Ghidra (Manual Installation for Ubuntu)
 * Install JDK 25 64-bit
 
 * Download a Ghidra release file from here: https://github.com/NationalSecurityAgency/ghidra/releases
@@ -58,6 +66,6 @@ sudo usermod -aG docker $USER
 * Launch by running: ./ghidraRun
 
 ## Usernames
-# picoCTF: AmicaiMukades
-# pwn.college: AmicaiMukades
-# PortSwigger: AmicaiMukades
+- picoCTF: AmicaiMukades
+- pwn.college: AmicaiMukades
+- PortSwigger: AmicaiMukades
