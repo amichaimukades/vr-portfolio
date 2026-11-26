@@ -3,3 +3,6 @@ vuln
 vuln2
 vuln3
 vuln_canary
+
+# temporary files
+pattern.txt
